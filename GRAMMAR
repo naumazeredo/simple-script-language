@@ -1,0 +1,104 @@
+P -> LDE           ; Programa
+
+LDE -> LDE DE      ; Lista de Declarações Externas
+     | DE
+
+DE -> DF
+    | DT
+
+T -> 'integer'
+   | 'char'
+   | 'boolean'
+   | 'string'
+   | ID
+
+DT -> 'type' ID '=' 'array' '[' NUM ']' 'of' T
+    | 'type' ID '=' 'struct' '{' DC '}'
+    | 'type' ID '=' T
+
+DC -> DC ';' LI ':' 'T'
+    | LI ':' 'T'
+
+DF -> 'function' ID '(' LP ')' ':' T B
+
+LP -> LP ',' ID ':' T
+    | ID ':' T
+
+B -> '{' LCV LS '}'
+
+LDV -> LDV DV
+     | DV
+
+LS -> LS S
+    | S
+
+DV -> 'var' LI ':' T ';'
+
+LI -> LI ',' ID
+    | ID
+
+S -> 'if' '(' E ')' S
+   | 'if' '(' E ')' S 'else' S
+   | 'while' '(' E ')' S
+   | 'do' S 'while' '(' E ')' ';'
+   | B
+   | LV '=' E ';'
+   | 'break' ';'
+   | 'continue' ';'
+
+E -> E '&&' L
+   | E '||' L
+   | L
+
+L -> L '<' R
+   | L '>' R
+   | L '<=' R
+   | L '>=' R
+   | L '==' R
+   | L '!=' R
+   | R
+
+R -> R '+' Y
+   | R '-' Y
+   | Y
+
+Y -> Y '*' F
+   | Y '/' F
+   | F
+
+F -> LV
+   | '++' LV
+   | '--' LV
+   | LV '++'
+   | LV '--'
+   | '(' E ')'
+   | ID '(' LE ')'
+   | '-' F
+   | '!' F
+   | TRUE
+   | FALSE
+   | CHR
+   | STR
+   | NUM
+
+LE -> LE ',' E
+    | E
+
+LV -> LV '.' ID
+    | LV '[' E ']'
+    | ID
+
+ID -> Id
+
+TRUE -> 'true'
+FALSE -> 'false'
+CHR -> c
+DTR -> s
+NUM -> n
+
+; letra = [a-zA-Z]
+; digito = [0-9]
+; Id = letra (letra + digito)*
+; n = digito digito*
+; c = '.'
+; s = ".*"
