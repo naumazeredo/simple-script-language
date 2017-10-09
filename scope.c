@@ -46,9 +46,10 @@ pobject search_symbol_in_scope(int name) {
 
 pobject search_symbol_globally(int name) {
   int i;
+  pobject obj;
 
   for (i = symbol_table_level; i >= 0; i--) {
-    pobject obj = symbol_table[symbol_table_level];
+    obj = symbol_table[symbol_table_level];
 
     while (obj != NULL) {
       if (obj->name == name)

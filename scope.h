@@ -27,24 +27,30 @@ typedef struct object {
   union {
     struct {
       struct object* type;
+      int nIndex;
+      int nSize;
     } Var, Param, Field;
 
     struct {
       struct object* ret_type;
       struct object* params;
+      int nIndex;
     } Function;
 
     struct {
       struct object* elem_type;
       int nNumElems;
+      int nSize;
     } Array;
 
     struct {
       struct object* fields;
+      int nSize;
     } Struct;
 
     struct {
       struct object* base_type;
+      int nSize;
     } Alias;
   };
 } object, * pobject;
