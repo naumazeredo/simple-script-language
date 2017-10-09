@@ -12,6 +12,11 @@
 
 #define MAX_NEST_LEVEL 64
 
+#define IS_TYPE_KIND(k) ((k) == KIND_ARRAY_TYPE  || \
+                         (k) == KIND_STRUCT_TYPE || \
+                         (k) == KIND_ALIAS_TYPE  || \
+                         (k) == KIND_SCALAR_TYPE)
+
 typedef enum {
   KIND_UNDEFINED = -1, KIND_VAR, KIND_PARAM, KIND_FUNCTION, KIND_FIELD,
   KIND_ARRAY_TYPE, KIND_STRUCT_TYPE, KIND_ALIAS_TYPE, KIND_SCALAR_TYPE,
@@ -64,5 +69,6 @@ int end_block();
 pobject define_symbol(int name);
 pobject search_symbol_in_scope(int name);
 pobject search_symbol_globally(int name);
+int check_types(pobject t1, pobject t2);
 
 #endif //SSL_SCOPE
