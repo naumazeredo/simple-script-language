@@ -35,13 +35,13 @@ int main() {
   init_tables();
 
   do {
-    getNextToken();
+    get_next_token();
     printf("%s", tts[token]);
     if (token == TOKEN_ID) printf(" %s (%d)", table_ids.keys[secondary_token], secondary_token);
 
-    if (token == TOKEN_STRINGVAL) printf(" %s (%d)", getStringConst(secondary_token), secondary_token);
-    if (token == TOKEN_NUMERAL)   printf(" %d (%d)", getNumeralConst(secondary_token), secondary_token);
-    if (token == TOKEN_CHARACTER) printf(" %c (%d)", getCharConst(secondary_token), secondary_token);
+    if (token == TOKEN_STRINGVAL) printf(" %s (%d)", get_string_const(secondary_token), secondary_token);
+    if (token == TOKEN_NUMERAL)   printf(" %d (%d)", get_numeral_const(secondary_token), secondary_token);
+    if (token == TOKEN_CHARACTER) printf(" %c (%d)", get_char_const(secondary_token), secondary_token);
 
     printf("\n");
   } while (token != TOKEN_UNKNOWN && token != TOKEN_EOF);

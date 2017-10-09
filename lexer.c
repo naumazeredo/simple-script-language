@@ -9,8 +9,8 @@
 
 #include "lexer.h"
 
-t_const aConsts[MAX_CONST];
-int     nNumConsts = 0;
+t_const consts[MAX_CONST];
+int     num_consts = 0;
 
 t_token token;
 int     secondary_token;
@@ -43,35 +43,35 @@ void init_tables() {
   nht_add(&table_keywords, "of",       TOKEN_OF      );
 }
 
-t_token searchKeyword(char* name) {
+t_token search_keyword(char* name) {
   t_token token;
   return (token = (t_token)nht_search(&table_keywords, name)) == NHT_ERROR ? TOKEN_ID : token;
 }
 
-int searchName(char* name) {
+int search_name(char* name) {
   int val;
   if ((val = nht_search(&table_ids, name)) != NHT_ERROR)
     return val;
   return nht_add(&table_ids, name, strlen(name));
 }
 
-int addCharConst(char c) {
+int add_char_const(char c) {
   t_const new_const;
   new_const.type = TOKEN_CHARACTER;
   new_const.c = c;
-  aConsts[nNumConsts] = new_const;
-  return nNumConsts++;
+  consts[num_consts] = new_const;
+  return num_consts++;
 }
 
-int addNumeralConst(int n) {
+int add_numeral_const(int n) {
   t_const new_const;
   new_const.type = TOKEN_NUMERAL;
   new_const.n = n;
-  aConsts[nNumConsts] = new_const;
-  return nNumConsts++;
+  consts[num_consts] = new_const;
+  return num_consts++;
 }
 
-int addStringConst(char* s, size_t len) {
+int add_string_const(char* s, size_t len) {
   t_const new_const;
   new_const.type = TOKEN_STRINGVAL;
 
@@ -79,13 +79,13 @@ int addStringConst(char* s, size_t len) {
   strcpy(new_string, s);
 
   new_const.s = new_string;
-  aConsts[nNumConsts] = new_const;
-  return nNumConsts++;
+  consts[num_consts] = new_const;
+  return num_consts++;
 }
 
-char  getCharConst   (int n) { return aConsts[n].c; }
-int   getNumeralConst(int n) { return aConsts[n].n; }
-char* getStringConst (int n) { return aConsts[n].s; }
+char  get_char_const   (int n) { return consts[n].c; }
+int   get_numeral_const(int n) { return consts[n].n; }
+char* get_string_const (int n) { return consts[n].s; }
 
 
 static char readChar() { return getchar(); } // getchar -> fgetc
@@ -105,7 +105,7 @@ static void setDoubleToken(char next, t_token single_token, t_token double_token
   }
 }
 
-void getNextToken() {
+t_token get_next_token() {
   if (isspace(next_char))
     next_char = readValidChar();
 
@@ -123,13 +123,11 @@ void getNextToken() {
     }
     buffer[size] = '\0';
 
-    token = searchKeyword(buffer);
+    token = search_keyword(buffer);
     if (token == TOKEN_ID) {
-      secondary_token = searchName(buffer);
+      secondary_token = search_name(buffer);
     }
   } else if (isdigit(next_char)) {
-    size_t size = 1;
-
     int num = next_char-'0';
 
     next_char = readChar();
@@ -139,7 +137,7 @@ void getNextToken() {
     }
 
     token = TOKEN_NUMERAL;
-    secondary_token = addNumeralConst(num);
+    secondary_token = add_numeral_const(num);
   } else if (next_char == '"') {
     char buffer[MAX_BUFFER_LEN+1];
     buffer[0] = '"';
@@ -158,7 +156,7 @@ void getNextToken() {
       buffer[size]   = '\0';
 
       token = TOKEN_STRINGVAL;
-      secondary_token = addStringConst(buffer, size);
+      secondary_token = add_string_const(buffer, size);
       next_char = readChar();
     }
   } else if (next_char == '\'') {
@@ -170,7 +168,7 @@ void getNextToken() {
       next_char = readChar();
       if (next_char == '\'') {
         token = TOKEN_CHARACTER;
-        secondary_token = addCharConst(c);
+        secondary_token = add_char_const(c);
         next_char = readChar();
       } else {
         token = TOKEN_UNKNOWN;
@@ -203,4 +201,6 @@ void getNextToken() {
       default: token = TOKEN_UNKNOWN;
     }
   }
+
+  return token;
 }
