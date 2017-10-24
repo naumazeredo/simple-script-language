@@ -82,6 +82,12 @@ int check_types(pobject t1, pobject t2)
   /**/ if (t1 == t2) return 1;
   else if (t1 == pUniversal || t2 == pUniversal) return 1;
   else if (t1->kind == KIND_UNIVERSAL || t2->kind == KIND_UNIVERSAL) return 1;
+  else if(t1->kind == KIND_ALIAS_TYPE && t2->kind != KIND_ALIAS_TYPE){
+    return check_types(t1->Alias.pBaseType,t2);
+  }
+  else if(t1->kind != KIND_ALIAS_TYPE && t2->kind == KIND_ALIAS_TYPE){
+    return check_types(t1,t2->Alias.pBaseType);
+  }
   else if (t1->kind == t2->kind) {
     if (t1->kind == KIND_ALIAS_TYPE) {
       return check_types(t1->Alias.pBaseType, t2->Alias.pBaseType);
