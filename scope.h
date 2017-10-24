@@ -75,8 +75,8 @@ extern pobject pString;
 extern object universal_;
 extern pobject pUniversal;
 
-extern int new_block();
-extern int end_block();
+int new_block();
+int end_block();
 
 pobject define_symbol(int name);
 pobject search_symbol_in_scope(int name);

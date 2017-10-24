@@ -13,7 +13,9 @@
 
 t_attrib semantic_stack[MAX_STACK_SIZE];
 int semantic_stack_size = 0;
+int nFuncs = 0;
 pobject curFunction;
+int functionVarPos;
 
 void new_label(void){
   static int label_number = 0;
@@ -42,7 +44,7 @@ void semantics(int rule) {
   // TODO
   static int name,n,l,l1,l2;
   static pobject p,t,f;
-  static t_attrib IDD_static,IDU_static,ID_static,T_static,LI_static,LI0_static,LI1_static,TRU_static,FALS_static,STR_static,CHR_static,NUM_static,DC_static,DC0_static,DC1_static,LP_static,LP0_static,LP1_static,E_static,E0_static,E1_static,L_static,L0_static,L1_static,R_static,R0_static,R1_static,Y_static,Y0_static,Y1_static,F_static,F0_static,F1_static,LV_static,LV0_static,LV1_static,MC_static,LE_static,LE0_static,LE1_static,MT_static,ME_static,MW_static;
+  static t_attrib IDD_static,IDU_static,ID_static,T_static,LI_static,LI0_static,LI1_static,TRU_static,FALS_static,STR_static,CHR_static,NUM_static,DC_static,DC0_static,DC1_static,LP_static,LP0_static,LP1_static,E_static,E0_static,E1_static,L_static,L0_static,L1_static,R_static,R0_static,R1_static,Y_static,Y0_static,Y1_static,F_static,F0_static,F1_static,LV_static,LV0_static,LV1_static,MC_static,LE_static,LE0_static,LE1_static,MT_static,ME_static,MW_static,NB_static;
 
   switch(rule){
     case RULE_P_0:      //P -> LDE
@@ -97,7 +99,7 @@ void semantics(int rule) {
           }
       }
       else{
-          //T_static.T.type = pUniversal;
+          T_static.T.type = pUniversal;
           T_static.nSize = 0;
           //Error
       }
@@ -244,6 +246,12 @@ void semantics(int rule) {
       semantic_stack_push(LP_static);
       break;
     case RULE_B_0:      //B -> TOKEN_LEFT_BRACES LDV LS TOKEN_RIGHT_BRACES
+      fprintf(out,"END_FUNC\n");
+
+      int currentPos = ftell(out);
+      fseek(out, functionVarPos, SEEK_SET);
+      fprintf(out, "%02d",f->Function.nVars);
+      fseek(out, current, SEEK_SET);
       break;
     case RULE_LDV_0:    //LDV -> LDV DV
       break;
@@ -290,6 +298,13 @@ void semantics(int rule) {
       semantic_stack_pop();
       semantic_stack_push(LI_static);
       break;
+    case RULE_MT_0:     //MT -> ''
+      l = new_label();
+      MT_static.MT.label = l;
+      MT_static.type = MT;
+      fprintf(out,"\tTJMP_FW L%d\n",l);
+      semantic_stack_push(MT_static);
+      break;
     case RULE_S_0:      //S -> TOKEN_IF TOKEN_LEFT_PARENTHESIS E TOKEN_RIGHT_PARENTHESIS S
       MT_static = semantic_stack_top();
       semantic_stack_pop();
@@ -299,7 +314,18 @@ void semantics(int rule) {
       t = E_static.E.type;
       //if( !check_types(t,pBool)){//Error}
       
-      //fprintf(out,"L%d\n",MT_._.MT.label);
+      fprintf(out,"L%d\n",MT_static.MT.label);
+      break;
+    case RULE_ME_0:     //ME -> ''
+      MT_static = semantic_stack_top();
+      l1 = MT_static.MT.label;
+      l2 = new_label();
+      ME_static.ME.label = l2;
+      ME_static.type = ME;
+      semantic_stack_push(ME_static);
+      
+      fprintf(out,"\tTJMP_FW L%d\nL%d\n",l2,l1);
+      break;
       break;
     case RULE_S_1:      //S -> TOKEN_IF TOKEN_LEFT_PARENTHESIS E TOKEN_RIGHT_PARENTHESIS S TOKEN_ELSE S
       ME_static = semantic_stack_top();
@@ -313,7 +339,13 @@ void semantics(int rule) {
       
       t = E_static.E.type;
       //if( !check_types(t,pBool)){//Error}
-      //fprintf(out,"L%d\n",l);
+      fprintf(out,"L%d\n",l);
+      break;
+    case RULE_MW_0:     //MW -> ''
+      l = new_label();
+      MW_static.MW.label = l;
+      semantic_stack_push(MW_static);
+      fprintf(out,"L%d\n",l);
       break;
     case RULE_S_2:      //S -> TOKEN_WHILE TOKEN_LEFT_PARENTHESIS E TOKEN_RIGHT_PARENTHESIS S
       MT_static = semantic_stack_top();
@@ -329,7 +361,7 @@ void semantics(int rule) {
       t = E_static.E.type;
       //if( !check_types(t,pBool)){//Error}
       
-      //fprintf(out,"\tJMP_BW L%d\nL%d\n",l1,l2);
+      fprintf(out,"\tJMP_BW L%d\nL%d\n",l1,l2);
       break;
     case RULE_S_3:      //S -> TOKEN_DO S TOKEN_WHILE TOKEN_LEFT_PARENTHESIS E TOKEN_RIGHT_PARENTHESIS TOKEN_SEMICOLON
       E_static = semantic_stack_top();
@@ -342,7 +374,7 @@ void semantics(int rule) {
       t = E_static.E.type;
       //if( !check_types(t,pBool)){//Error}
       
-      //fprintf(out,"\tNOT\n\tTJMP_BW L%d\n",l);
+      fprintf(out,"\tNOT\n\tTJMP_BW L%d\n",l);
       break;
     case RULE_S_4:      //S -> NB B
       end_block();
@@ -350,7 +382,11 @@ void semantics(int rule) {
     case RULE_S_5:      //S -> LV TOKEN_EQUAL E TOKEN_SEMICOLON
       E_static = semantic_stack_top();
       semantic_stack_pop();
-      //fprintf(out,"\tPOP\n");
+      LV_static = semantic_stack_top();
+      semantic_stack_pop();
+      t = LV_static.LV.type;
+      //if(!check_types(LV_static.LV.type, E_static.E.type)){//Error}
+      fprintf(out,"\tSTORE_REF %d\n",t->Type.nSize);
       break;
     case RULE_S_6:      //S -> TOKEN_BREAK TOKEN_SEMICOLON
       break;
@@ -368,7 +404,7 @@ void semantics(int rule) {
       E0_static.E.type = pBool;
       E0_static.type = E;
       semantic_stack_push(E0_static);
-      //fprintf(out,"\tAND\n");
+      fprintf(out,"\tAND\n");
       break;
     case RULE_E_1:      //E -> E TOKEN_OR L
       L_static = semantic_stack_top();
@@ -382,7 +418,7 @@ void semantics(int rule) {
       E0_static.E.type = pBool;
       E0_static.type = E;
       semantic_stack_push(E0_static);
-      //fprintf(out,"\tOR\n");
+      fprintf(out,"\tOR\n");
       break;
     case RULE_E_2:      //E -> L
       L_static = semantic_stack_top();
@@ -402,7 +438,7 @@ void semantics(int rule) {
       L0_static.type = L;
       semantic_stack_push(L0_static);
       
-      //fprintf(out,"\tLT\n");
+      fprintf(out,"\tLT\n");
       break;
     case RULE_L_1:      //L -> L TOKEN_GREATER R
       R_static = semantic_stack_top();
@@ -414,7 +450,7 @@ void semantics(int rule) {
       L0_static.L.type = pBool;
       L0_static.type = L;
       semantic_stack_push(L0_static);
-      //fprintf(out,"\tGT\n");
+      fprintf(out,"\tGT\n");
       break;
     case RULE_L_2:      //L -> L TOKEN_LESS_OR_EQUAL R
       R_static = semantic_stack_top();
@@ -426,7 +462,7 @@ void semantics(int rule) {
       L0_static.L.type = pBool;
       L0_static.type = L;
       semantic_stack_push(L0_static);
-      //fprintf(out,"\tLE\n");
+      fprintf(out,"\tLE\n");
       break;
     case RULE_L_3:      //L -> L TOKEN_GREATER_OR_EQUAL R
       R_static = semantic_stack_top();
@@ -438,7 +474,7 @@ void semantics(int rule) {
       L0_static.L.type = pBool;
       L0_static.type = L;
       semantic_stack_push(L0_static);
-      //fprintf(out,"\tGE\n");
+      fprintf(out,"\tGE\n");
       break;
     case RULE_L_4:      //L -> L TOKEN_EQUAL_EQUAL R
       R_static = semantic_stack_top();
@@ -450,7 +486,7 @@ void semantics(int rule) {
       L0_static.L.type = pBool;
       L0_static.type = L;
       semantic_stack_push(L0_static);
-      //fprintf(out,"\tEQ\n");
+      fprintf(out,"\tEQ\n");
       break;
     case RULE_L_5:      //L -> L TOKEN_NOT_EQUAL R
       R_static = semantic_stack_top();
@@ -462,7 +498,7 @@ void semantics(int rule) {
       L0_static.L.type = pBool;
       L0_static.type = L;
       semantic_stack_push(L0_static);
-      //fprintf(out,"\tNE\n");
+      fprintf(out,"\tNE\n");
       break;
     case RULE_L_6:      //L -> R
       R_static = semantic_stack_top();
@@ -484,7 +520,7 @@ void semantics(int rule) {
       R0_static.R.type = R1_static.R.type;
       R0_static.type = R;
       semantic_stack_push(R0_static);
-      //fprintf(out,"\tADD\n");
+      fprintf(out,"\tADD\n");
       break;
     case RULE_R_1:      //R -> R TOKEN_MINUS Y
       Y_static = semantic_stack_top();
@@ -499,7 +535,7 @@ void semantics(int rule) {
       R0_static.R.type = R1_static.R.type;
       R0_static.type = R;
       semantic_stack_push(R0_static);
-      //fprintf(out,"\tSUB\n");
+      fprintf(out,"\tSUB\n");
       break;
     case RULE_R_2:      //R -> Y
       Y_static = semantic_stack_top();
@@ -521,7 +557,7 @@ void semantics(int rule) {
       Y0_static.Y.type = Y1_static.Y.type;
       Y0_static.type = Y;
       semantic_stack_push(Y0_static);
-      //fprintf(out,"\tMUL\n");
+      fprintf(out,"\tMUL\n");
       break;
     case RULE_Y_1:      //Y -> Y TOKEN_DIVIDE F
       F_static = semantic_stack_top();
@@ -536,7 +572,7 @@ void semantics(int rule) {
       Y0_static.Y.type = Y1_static.Y.type;
       Y0_static.type = Y;
       semantic_stack_push(Y0_static);
-      //fprintf(out,"\tDIV\n");
+      fprintf(out,"\tDIV\n");
       break;
     case RULE_Y_2:      //Y -> F
       F_static = semantic_stack_top();
@@ -554,7 +590,7 @@ void semantics(int rule) {
       F_static.F.type = LV_static.LV.type;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tDE_REF %d\n",n);
+      fprintf(out,"\tDE_REF %d\n",n);
       break;
     case RULE_F_1:      //F -> TOKEN_PLUS_PLUS LV
       LV_static = semantic_stack_top();
@@ -564,8 +600,8 @@ void semantics(int rule) {
       
       F_static.F.type = pInt;
       F_static.type = F;
-      //fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
-      //fprintf(out,"\tINC\n\tSTORE_REF 1\n\tDE_REF 1\n");
+      fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
+      fprintf(out,"\tINC\n\tSTORE_REF 1\n\tDE_REF 1\n");
       semantic_stack_push(F_static);
       break;
     case RULE_F_2:      //F -> TOKEN_MINUS_MINUS LV
@@ -577,8 +613,8 @@ void semantics(int rule) {
       F_static.F.type = LV_static.LV.type;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
-      //fprintf(out,"\tDEC\n\tSTORE_REF 1\n\tDE_REF 1\n");
+      fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
+      fprintf(out,"\tDEC\n\tSTORE_REF 1\n\tDE_REF 1\n");
       break;
     case RULE_F_3:      //F -> LV TOKEN_PLUS_PLUS
       LV_static = semantic_stack_top();
@@ -589,9 +625,9 @@ void semantics(int rule) {
       F_static.F.type = LV_static.LV.type;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
-      //fprintf(out,"\tINC\n\tSTORE_REF 1\n\tDE_REF 1\n");
-      //fprintf(out,"\tDEC\n");
+      fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
+      fprintf(out,"\tINC\n\tSTORE_REF 1\n\tDE_REF 1\n");
+      fprintf(out,"\tDEC\n");
       break;
     case RULE_F_4:      //F -> LV TOKEN_MINUS_MINUS
       LV_static = semantic_stack_top();
@@ -602,9 +638,9 @@ void semantics(int rule) {
       F_static.F.type = t;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
-      //fprintf(out,"\tDEC\n\tSTORE_REF 1\n\tDE_REF 1\n");
-      //fprintf(out,"\tINC\n");
+      fprintf(out,"\tDUP\n\tDUP\n\tDE_REF 1\n");
+      fprintf(out,"\tDEC\n\tSTORE_REF 1\n\tDE_REF 1\n");
+      fprintf(out,"\tINC\n");
       break;
     case RULE_F_5:      //F -> TOKEN_LEFT_PARENTHESIS E TOKEN_RIGHT_PARENTHESIS
       E_static = semantic_stack_top();
@@ -633,7 +669,7 @@ void semantics(int rule) {
       //}
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tCALL %d\n",f->_.Function.nIndex);
+      fprintf(out,"\tCALL %d\n",f->Function.nIndex);
       break;
     case RULE_F_7:      //F -> TOKEN_MINUS F
       F1_static = semantic_stack_top();
@@ -645,7 +681,7 @@ void semantics(int rule) {
       F0_static.F.type = t;
       F0_static.type = F;
       semantic_stack_push(F0_static);
-      //fprintf(out,"\tNEG\n");
+      fprintf(out,"\tNEG\n");
       break;
     case RULE_F_8:      //F -> TOKEN_NOT F
       F1_static = semantic_stack_top();
@@ -657,7 +693,7 @@ void semantics(int rule) {
       F0_static.F.type = t;
       F0_static.type = F;
       semantic_stack_push(F0_static);
-      //fprintf(out,"\tNOT\n");
+      fprintf(out,"\tNOT\n");
       break;
     case RULE_F_9:      //F -> TRUE
       TRU_static = semantic_stack_top();
@@ -665,7 +701,8 @@ void semantics(int rule) {
       F_static.F.type = pBool;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tLOAD_TRUE\n");
+
+      fprintf(out,"\tLOAD_CONST %d\n",secondary_token);
       break;
     case RULE_F_10:     //F -> FALSE
       FALS_static = semantic_stack_top();
@@ -673,7 +710,7 @@ void semantics(int rule) {
       F_static.F.type = pBool;
       F_static.type = F;
       semantic_stack_push(F_static);
-      //fprintf(out,"\tLOAD_FALSE\n");
+      fprintf(out,"\tLOAD_CONST %d\n",secondary_token);
       break;
     case RULE_F_11:     //F -> CHR
       CHR_static = semantic_stack_top();
@@ -682,7 +719,7 @@ void semantics(int rule) {
       F_static.type = F;
       semantic_stack_push(F_static);
       n = secondary_token;
-      //fprintf(out,"\tLOAD_CONST %d\n",n);
+      fprintf(out,"\tLOAD_CONST %d\n",n);
       break;
     case RULE_F_12:     //F -> STR
       STR_static = semantic_stack_top();
@@ -691,7 +728,7 @@ void semantics(int rule) {
       F_static.type = F;
       semantic_stack_push(F_static);
       n = secondary_token;
-      //fprintf(out,"\tLOAD_CONST %d\n",n);
+      fprintf(out,"\tLOAD_CONST %d\n",n);
       break;
     case RULE_F_13:     //F -> NUM
       STR_static = semantic_stack_top();
@@ -700,7 +737,7 @@ void semantics(int rule) {
       F_static.type = F;
       semantic_stack_push(F_static);
       n = secondary_token;
-      //fprintf(out,"\tLOAD_CONST %d\n",n);
+      fprintf(out,"\tLOAD_CONST %d\n",n);
       break;
     case RULE_LE_0:     //LE -> LE TOKEN_COMMA E
       E_static = semantic_stack_top();
@@ -777,12 +814,12 @@ void semantics(int rule) {
           else{
               LV0_static.LV.type = p->Field.pType;
               LV0_static.LV.type->Type.nSize = p->Field.nSize;
+              fprintf(out,"\tADD %d\n",p->Field.nIndex);
           }
       }
       
       LV0_static.type = LV;
       semantic_stack_push(LV0_static);
-      //fprintf(out,"\tADD %d\n",p->_.Field.nIndex);
       break;
     case RULE_LV_1:     //LV -> LV TOKEN_LEFT_SQUARE E TOKEN_RIGHT_SQUARE
       E_static = semantic_stack_top();
@@ -802,8 +839,8 @@ void semantics(int rule) {
       }
       else{
           LV0_static.LV.type = t->Array.pElemType;
-          n = t->Array.pElemType->Struct.nSize;
-          //fprintf(out,"\tMUL %d\n\tADD\n",n);
+          n = t->Array.pElemType->Type.nSize;
+          fprintf(out,"\tMUL %d\n\tADD\n",n);
       }
       
       if( !check_types(E_static.E.type,pInt)){
@@ -827,18 +864,30 @@ void semantics(int rule) {
       else{
           LV_static.LV.type = p->Var.pType;
           LV_static.LV.type->Type.nSize = p->Var.nSize;
+          fprintf(out,"\tLOAD_REF %d\n",p->Var.nIndex);
       }
       LV_static.type = LV;
       semantic_stack_push(LV_static);
-      //fprintf(out,"\tLOAD_REF %d\n",p->_.Var.nIndex);
       break;
     case RULE_NB_0:     //NB -> ''
+      new_block();
+      break;
+    case RULE_NF_0:     //NF -> ''
+      IDD_static = semantic_stack_top();
+      // TODO Não tem pop??
+      f = IDD_static.ID.obj;
+      f->kind = KIND_FUNCTION;
+      f->Function.nParams = 0;
+      f->Function.nVars = 0;
+      f->Function.nIndex = nFuncs++;
       new_block();
       break;
     case RULE_MF_0:     //MF -> ''
       T_static = semantic_stack_top();
       semantic_stack_pop();
       LP_static = semantic_stack_top();
+      semantic_stack_pop();
+      NB_static = semantic_stack_top();
       semantic_stack_pop();
       IDD_static = semantic_stack_top();
       semantic_stack_pop();
@@ -851,11 +900,12 @@ void semantics(int rule) {
       f->Function.nVars = LP_static.nSize;
       curFunction = f;
       
-      /*fprintf(out,"BEGIN_FUNC %d %d ",f->_.Function.nIndex,
-              f->_.Function.nParams
-              );
-      fgetpos(out,&functionVarPos);
-      fprintf(out,"                        \n");*/
+      fprintf(out,"BEGIN_FUNC %d, %d, %02d\n",f->Function.nIndex,
+              f->Function.nParams,0);
+      functionVarPos = ftell(out) - 3;
+
+      /*fgetpos(out,&functionVarPos);
+      fprintf(out,"\n");*/
       break;
     case RULE_MC_0:     //MC -> ''
       IDU_static = semantic_stack_top();

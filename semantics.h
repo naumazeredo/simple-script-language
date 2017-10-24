@@ -20,7 +20,7 @@ typedef struct {
     } ID;
     struct {
     	pobject type;
-    } T, E,L,R,Y,F,LV;
+    } T,E,L,R,Y,F,LV;
     struct {
         pobject type;
         pobject param;
