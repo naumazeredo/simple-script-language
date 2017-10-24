@@ -6,6 +6,7 @@
  */
 
 #include "semantics.h"
+#include <stdio.h>
 
 #define MAX_STACK_SIZE 256
 #define false 0
@@ -16,8 +17,17 @@ int semantic_stack_size = 0;
 int nFuncs = 0;
 pobject curFunction;
 int functionVarPos;
+FILE *out;
 
-void new_label(void){
+void open_file(){
+  out = fopen("ssl.ftw","w");
+  if(out == NULL){
+    printf("Erro: falha ao abrir arquivo");
+    exit(0);
+  }
+}
+
+int new_label(void){
   static int label_number = 0;
   return label_number++;
 }
@@ -251,7 +261,7 @@ void semantics(int rule) {
       int currentPos = ftell(out);
       fseek(out, functionVarPos, SEEK_SET);
       fprintf(out, "%02d",f->Function.nVars);
-      fseek(out, current, SEEK_SET);
+      fseek(out, currentPos, SEEK_SET);
       break;
     case RULE_LDV_0:    //LDV -> LDV DV
       break;

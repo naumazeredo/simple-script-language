@@ -16,8 +16,8 @@ def generate(rules, actions):
  *
  */
 
-#ifndef SSL_PARSER
-#define SSL_PARSER
+#ifndef SSL_PARSER_GEN
+#define SSL_PARSER_GEN
 
 #include "lexer.h"
 

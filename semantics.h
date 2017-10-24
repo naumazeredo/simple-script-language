@@ -60,6 +60,7 @@ typedef struct {
   };
 } t_attrib;
 
+void open_file();
 void semantics(int rule);
 
 #endif //SSL_SEMANTICS

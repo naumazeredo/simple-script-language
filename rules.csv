@@ -24,10 +24,10 @@
 5,DV
 3,LI
 1,LI
-5,S
+6,S
+9,S
 7,S
-5,S
-7,S
+8,S
 2,S
 4,S
 2,S
@@ -68,7 +68,11 @@
 4,LV
 1,LV
 1,NB
+1,NF
 1,MF
+1,MT
+1,ME
+1,MW
 1,MC
 1,IDD
 1,IDU

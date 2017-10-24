@@ -7,8 +7,8 @@
  *
  */
 
-#ifndef SSL_PARSER
-#define SSL_PARSER
+#ifndef SSL_PARSER_GEN
+#define SSL_PARSER_GEN
 
 #include "lexer.h"
 
@@ -19,11 +19,11 @@
 #define is_reduction(p) ((p)<0)
 #define get_rule(p)     (-(p))
 
-extern int rule[81][2];
-extern int action[163][81];
+extern int rule[85][2];
+extern int action[168][85];
 
 typedef enum {
-  DF = TOKEN_NUM, DE, DC, DV, DT, TRUE, IDD, LE, LDE, NB, LI, LV, NUM, LS, LP, LDV, B, E, F, IDU, L, P, S, R, T, STR, Y, ID, MF, FALSE, MC, CHR
+  EOF = TOKEN_NUM, DF, DE, DC, DV, DT, TRUE, IDD, LE, LDE, NB, NF, LI, LV, NUM, LS, LP, LDV, B, E, F, IDU, L, P, S, R, T, STR, Y, ID, ME, MF, FALSE, MC, CHR, MT, MW
 } t_nonterminal;
 
 enum {
@@ -97,7 +97,11 @@ enum {
   RULE_LV_1,
   RULE_LV_2,
   RULE_NB_0,
+  RULE_NF_0,
   RULE_MF_0,
+  RULE_MT_0,
+  RULE_ME_0,
+  RULE_MW_0,
   RULE_MC_0,
   RULE_IDD_0,
   RULE_IDU_0,
