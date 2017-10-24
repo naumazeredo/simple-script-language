@@ -31,40 +31,52 @@ typedef struct object {
 
   union {
     struct {
-      struct object* type;
-      int nIndex;
-      int nSize;
+        struct object *pType;
+        int nIndex;
+        int nSize;
     } Var, Param, Field;
-
     struct {
-      struct object* ret_type;
-      struct object* params;
-      int nIndex;
+        struct object *pRetType;
+        struct object *pParams;
+        int nIndex;
+        int nParams;
+        int nVars;
     } Function;
-
     struct {
-      struct object* elem_type;
-      int nNumElems;
-      int nSize;
+        struct object *pElemType; int nNumElems;
+        int nSize;
     } Array;
-
     struct {
-      struct object* fields;
-      int nSize;
+        struct object *pFields;
+        int nSize;
     } Struct;
-
     struct {
-      struct object* base_type;
-      int nSize;
-    } Alias;
+        struct object *pBaseType;
+        int nSize;
+    } Alias,Type;
   };
 } object, * pobject;
 
 extern pobject symbol_table[MAX_NEST_LEVEL];
 extern int symbol_table_level;
 
-int new_block();
-int end_block();
+extern object int_;
+extern pobject pInt;
+
+extern object char_;
+extern pobject pChar;
+
+extern object bool_;
+extern pobject pBool;
+
+extern object string_;
+extern pobject pString;
+
+extern object universal_;
+extern pobject pUniversal;
+
+extern int new_block();
+extern int end_block();
 
 pobject define_symbol(int name);
 pobject search_symbol_in_scope(int name);
