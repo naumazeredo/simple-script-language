@@ -26,7 +26,7 @@ pobject pUniversal = &universal_;
 
 
 pobject symbol_table[MAX_NEST_LEVEL];
-int symbol_table_level = -1;
+int symbol_table_level = 0;
 
 int new_block() {
   symbol_table_level++;
@@ -42,6 +42,7 @@ pobject define_symbol(int name) {
   pobject obj = (pobject) malloc(sizeof(object));
 
   obj->name = name;
+  obj->kind = KIND_UNDEFINED;
   obj->next = symbol_table[symbol_table_level];
   symbol_table[symbol_table_level] = obj;
 
@@ -61,11 +62,10 @@ pobject search_symbol_in_scope(int name) {
 }
 
 pobject search_symbol_globally(int name) {
-  int i;
   pobject obj;
 
-  for (i = symbol_table_level; i >= 0; i--) {
-    obj = symbol_table[symbol_table_level];
+  for (int i = symbol_table_level; i >= 0; i--) {
+    obj = symbol_table[i];
 
     while (obj != NULL) {
       if (obj->name == name)

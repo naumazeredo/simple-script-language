@@ -7,36 +7,62 @@
 
 #include "parser.h"
 
+char* token_name[] = {
+  "TOKEN_TRUE", "TOKEN_FALSE",
+  "TOKEN_CHAR", "TOKEN_INTEGER", "TOKEN_BOOLEAN", "TOKEN_ARRAY",
+  "TOKEN_FUNCTION", "TOKEN_STRING", "TOKEN_VAR", "TOKEN_STRUCT",
+  "TOKEN_RETURN", "TOKEN_BREAK", "TOKEN_CONTINUE",
+  "TOKEN_WHILE", "TOKEN_DO", "TOKEN_IF", "TOKEN_ELSE",
+  "TOKEN_TYPE", "TOKEN_OF",
+  "TOKEN_EOF",
+  "TOKEN_COLON", "TOKEN_SEMICOLON", "TOKEN_COMMA",
+  "TOKEN_EQUAL",
+  "TOKEN_LEFT_SQUARE", "TOKEN_RIGHT_SQUARE", "TOKEN_LEFT_BRACES", "TOKEN_RIGHT_BRACES",
+  "TOKEN_LEFT_PARENTHESIS", "TOKEN_RIGHT_PARENTHESIS",
+  "TOKEN_AND", "TOKEN_OR",
+  "TOKEN_LESS", "TOKEN_GREATER", "TOKEN_LESS_OR_EQUAL", "TOKEN_GREATER_OR_EQUAL",
+  "TOKEN_NOT_EQUAL", "TOKEN_EQUAL_EQUAL",
+  "TOKEN_PLUS", "TOKEN_MINUS", "TOKEN_TIMES", "TOKEN_DIVIDE",
+  "TOKEN_PLUS_PLUS", "TOKEN_MINUS_MINUS",
+  "TOKEN_DOT", "TOKEN_NOT",
+  "TOKEN_CHARACTER", "TOKEN_NUMERAL", "TOKEN_STRINGVAL", "TOKEN_ID",
+  "TOKEN_UNKNOWN"
+};
+
 void parse() {
   init_tables();
   create_action_table();
   open_file();
 
-  queue q;
-  queue_create(&q);
+  stack s;
+  stack_create(&s);
 
-  queue_push(&q, 0);
+  stack_push(&s, 0);
   t_token a = get_next_token();
 
   do {
-    int u = queue_front(q);
+    int u = stack_top(s);
     int p = action[u][(int)a];
-    printf("Vai dar certo, u = %d e p = %d e a = %d!!!!!\n",u,p,(int)a);
+    //stack_print(s);
 
     if (is_shift(p)) {
-      queue_push(&q, p);
+      stack_push(&s, p);
       a = get_next_token();
     } else if (is_reduction(p)) {
       int r = get_rule(p);
-      queue_popn(&q, get_rule_len(r));
+      stack_popn(&s, get_rule_len(r));
 
-      queue_push(&q, action[u][get_rule_left(r)]);
+      u = stack_top(s);
+
+      stack_push(&s, action[u][get_rule_left(r)]);
 
       semantics(r);
     } else {
       // Error
     }
 
-    u = queue_front(q);
-  } while (queue_front(q) != 1); // final state
+    u = stack_top(s);
+  } while (stack_top(s) != 1 || a != TOKEN_EOF); // final state
+
+  close_file();
 }

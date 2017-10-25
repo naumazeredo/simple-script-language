@@ -32,7 +32,7 @@ void init_tables() {
   nht_add(&table_keywords, "string",   TOKEN_STRING  );
   nht_add(&table_keywords, "var",      TOKEN_VAR     );
   nht_add(&table_keywords, "struct",   TOKEN_STRUCT  );
-  nht_add(&table_keywords, "return",   TOKER_RETURN  );
+  nht_add(&table_keywords, "return",   TOKEN_RETURN  );
   nht_add(&table_keywords, "break",    TOKEN_BREAK   );
   nht_add(&table_keywords, "continue", TOKEN_CONTINUE);
   nht_add(&table_keywords, "while",    TOKEN_WHILE   );

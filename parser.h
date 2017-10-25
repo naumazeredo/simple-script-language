@@ -9,7 +9,7 @@
 #define SSL_PARSER
 
 #include "parser_gen.h"
-#include "queue.h"
+#include "stack.h"
 #include "semantics.h"
 
 void parse();

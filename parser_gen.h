@@ -20,10 +20,10 @@
 #define get_rule(p)     (-(p))
 
 extern int rule[85][2];
-extern int action[168][85];
+extern int action[168][95];
 
 typedef enum {
-  EOF = TOKEN_NUM, DF, DE, DC, DV, DT, TRUE, IDD, LE, LDE, NB, NF, LI, LV, NUM, LS, LP, LDV, B, E, F, IDU, L, P, S, R, T, STR, Y, ID, ME, MF, FALSE, MC, CHR, MT, MW
+  DF = TOKEN_NUM, DE, DC, DV, DT, TRUE, IDD, LE, LDE, NB, NF, LI, LV, NUM, LS, LP, LDV, B, E, F, IDU, L, P, S, R, T, STR, Y, ID, ME, MF, FALSE, MC, CHR, MT, MW
 } t_nonterminal;
 
 enum {
@@ -112,5 +112,7 @@ enum {
   RULE_STR_0,
   RULE_NUM_0
 };
+
+void create_action_table();
 
 #endif //SSL_PARSER

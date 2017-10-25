@@ -31,7 +31,7 @@ def generate(rules, actions):
 ''')
 
     f.write('extern int rule[{}][2];\n'.format(len(rules)+1))
-    f.write('extern int action[{}][{}];\n\n'.format(len(actions), len(actions[0])))
+    f.write('extern int action[{}][{}];\n\n'.format(len(actions), len(actions[0])+10))
 
     non_terminals = set(v[0] for _, a in actions.iteritems() for v in a if not v[0].startswith('TOKEN_'))
 
@@ -53,6 +53,7 @@ def generate(rules, actions):
         rules_cnt[k] += 1
     f.write('\n};\n\n');
 
+    f.write("void create_action_table();\n\n");
     f.write('#endif //SSL_PARSER')
 
     f.close()
@@ -73,7 +74,7 @@ def generate(rules, actions):
 
     # Rules
     f.write('int rule[{}][2] = {{\n'.format(len(rules)+1))
-    f.write('  { 0, 0 },\n');
+    #f.write('  { 0, 0 },\n');
     for state, v in rules.iteritems():
         if state != 1:
             f.write(',\n');
@@ -81,7 +82,7 @@ def generate(rules, actions):
     f.write('\n};\n\n')
 
     # Actions
-    f.write('int action[{}][{}];\n\n'.format(len(actions), len(actions[0])))
+    f.write('int action[{}][{}];\n\n'.format(len(actions), len(actions[0])+10))
     f.write('void create_action_table() {\n')
 
     for state, action in actions.iteritems():

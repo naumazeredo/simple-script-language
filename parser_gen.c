@@ -10,7 +10,6 @@
 #include "parser_gen.h"
 
 int rule[85][2] = {
-  { 0, 0 },
   { 1, P },
   { 2, LDE },
   { 1, LDE },
@@ -80,13 +79,13 @@ int rule[85][2] = {
   { 3, LV },
   { 4, LV },
   { 1, LV },
-  { 1, NB },
-  { 1, NF },
-  { 1, MF },
-  { 1, MT },
-  { 1, ME },
-  { 1, MW },
-  { 1, MC },
+  { 0, NB },
+  { 0, NF },
+  { 0, MF },
+  { 0, MT },
+  { 0, ME },
+  { 0, MW },
+  { 0, MC },
   { 1, IDD },
   { 1, IDU },
   { 1, ID },
@@ -97,7 +96,7 @@ int rule[85][2] = {
   { 1, NUM }
 };
 
-int action[168][85];
+int action[168][95];
 
 void create_action_table() {
   action[0][TOKEN_TYPE] = 6;
@@ -113,20 +112,20 @@ void create_action_table() {
   action[1][DF] = 3;
   action[2][TOKEN_TYPE] = -2;
   action[2][TOKEN_FUNCTION] = -2;
-  action[2][EOF] = -2;
+  action[2][TOKEN_EOF] = -2;
   action[3][TOKEN_TYPE] = -3;
   action[3][TOKEN_FUNCTION] = -3;
-  action[3][EOF] = -3;
+  action[3][TOKEN_EOF] = -3;
   action[4][TOKEN_TYPE] = -4;
   action[4][TOKEN_FUNCTION] = -4;
-  action[4][EOF] = -4;
+  action[4][TOKEN_EOF] = -4;
   action[5][TOKEN_ID] = 9;
   action[5][IDD] = 8;
   action[6][TOKEN_ID] = 9;
   action[6][IDD] = 10;
   action[7][TOKEN_TYPE] = -1;
   action[7][TOKEN_FUNCTION] = -1;
-  action[7][EOF] = -1;
+  action[7][TOKEN_EOF] = -1;
   action[8][TOKEN_LEFT_PARENTHESIS] = -70;
   action[8][NF] = 11;
   action[9][TOKEN_TYPE] = -76;
@@ -135,7 +134,7 @@ void create_action_table() {
   action[9][TOKEN_FUNCTION] = -76;
   action[9][TOKEN_LEFT_PARENTHESIS] = -76;
   action[9][TOKEN_COMMA] = -76;
-  action[9][EOF] = -76;
+  action[9][TOKEN_EOF] = -76;
   action[10][TOKEN_EQUAL] = 12;
   action[11][TOKEN_LEFT_PARENTHESIS] = 13;
   action[12][TOKEN_INTEGER] = 17;
@@ -155,7 +154,7 @@ void create_action_table() {
   action[15][NB] = 26;
   action[16][TOKEN_TYPE] = -12;
   action[16][TOKEN_FUNCTION] = -12;
-  action[16][EOF] = -12;
+  action[16][TOKEN_EOF] = -12;
   action[17][TOKEN_TYPE] = -5;
   action[17][TOKEN_LEFT_BRACES] = -5;
   action[17][TOKEN_RIGHT_BRACES] = -5;
@@ -163,7 +162,7 @@ void create_action_table() {
   action[17][TOKEN_FUNCTION] = -5;
   action[17][TOKEN_RIGHT_PARENTHESIS] = -5;
   action[17][TOKEN_COMMA] = -5;
-  action[17][EOF] = -5;
+  action[17][TOKEN_EOF] = -5;
   action[18][TOKEN_TYPE] = -6;
   action[18][TOKEN_LEFT_BRACES] = -6;
   action[18][TOKEN_RIGHT_BRACES] = -6;
@@ -171,7 +170,7 @@ void create_action_table() {
   action[18][TOKEN_FUNCTION] = -6;
   action[18][TOKEN_RIGHT_PARENTHESIS] = -6;
   action[18][TOKEN_COMMA] = -6;
-  action[18][EOF] = -6;
+  action[18][TOKEN_EOF] = -6;
   action[19][TOKEN_TYPE] = -7;
   action[19][TOKEN_LEFT_BRACES] = -7;
   action[19][TOKEN_RIGHT_BRACES] = -7;
@@ -179,7 +178,7 @@ void create_action_table() {
   action[19][TOKEN_FUNCTION] = -7;
   action[19][TOKEN_RIGHT_PARENTHESIS] = -7;
   action[19][TOKEN_COMMA] = -7;
-  action[19][EOF] = -7;
+  action[19][TOKEN_EOF] = -7;
   action[20][TOKEN_TYPE] = -8;
   action[20][TOKEN_LEFT_BRACES] = -8;
   action[20][TOKEN_RIGHT_BRACES] = -8;
@@ -187,7 +186,7 @@ void create_action_table() {
   action[20][TOKEN_FUNCTION] = -8;
   action[20][TOKEN_RIGHT_PARENTHESIS] = -8;
   action[20][TOKEN_COMMA] = -8;
-  action[20][EOF] = -8;
+  action[20][TOKEN_EOF] = -8;
   action[21][TOKEN_TYPE] = -9;
   action[21][TOKEN_LEFT_BRACES] = -9;
   action[21][TOKEN_RIGHT_BRACES] = -9;
@@ -195,7 +194,7 @@ void create_action_table() {
   action[21][TOKEN_FUNCTION] = -9;
   action[21][TOKEN_RIGHT_PARENTHESIS] = -9;
   action[21][TOKEN_COMMA] = -9;
-  action[21][EOF] = -9;
+  action[21][TOKEN_EOF] = -9;
   action[22][TOKEN_TYPE] = -77;
   action[22][TOKEN_EQUAL] = -77;
   action[22][TOKEN_LEFT_SQUARE] = -77;
@@ -222,7 +221,7 @@ void create_action_table() {
   action[22][TOKEN_PLUS_PLUS] = -77;
   action[22][TOKEN_MINUS_MINUS] = -77;
   action[22][TOKEN_DOT] = -77;
-  action[22][EOF] = -77;
+  action[22][TOKEN_EOF] = -77;
   action[23][TOKEN_RIGHT_PARENTHESIS] = 27;
   action[23][TOKEN_COMMA] = 28;
   action[24][TOKEN_COLON] = 29;
@@ -295,7 +294,7 @@ void create_action_table() {
   action[42][IDU] = 21;
   action[43][TOKEN_TYPE] = -11;
   action[43][TOKEN_FUNCTION] = -11;
-  action[43][EOF] = -11;
+  action[43][TOKEN_EOF] = -11;
   action[44][TOKEN_ID] = 9;
   action[44][LI] = 50;
   action[44][IDD] = 39;
@@ -314,7 +313,7 @@ void create_action_table() {
   action[48][TOKEN_COMMA] = -16;
   action[49][TOKEN_TYPE] = -10;
   action[49][TOKEN_FUNCTION] = -10;
-  action[49][EOF] = -10;
+  action[49][TOKEN_EOF] = -10;
   action[50][TOKEN_COLON] = 55;
   action[50][TOKEN_COMMA] = 46;
   action[51][TOKEN_RIGHT_BRACES] = -14;
@@ -323,7 +322,7 @@ void create_action_table() {
   action[52][TOKEN_COMMA] = -24;
   action[53][TOKEN_TYPE] = -15;
   action[53][TOKEN_FUNCTION] = -15;
-  action[53][EOF] = -15;
+  action[53][TOKEN_EOF] = -15;
   action[54][TOKEN_VAR] = 58;
   action[54][LDV] = 56;
   action[54][DV] = 57;
@@ -360,7 +359,7 @@ void create_action_table() {
   action[57][TOKEN_BREAK] = -20;
   action[57][TOKEN_CONTINUE] = -20;
   action[57][TOKEN_ID] = -20;
-  action[57][EOF] = -20;
+  action[57][TOKEN_EOF] = -20;
   action[58][TOKEN_ID] = 9;
   action[58][LI] = 71;
   action[58][IDD] = 39;
@@ -390,7 +389,7 @@ void create_action_table() {
   action[61][TOKEN_BREAK] = -19;
   action[61][TOKEN_CONTINUE] = -19;
   action[61][TOKEN_ID] = -19;
-  action[61][EOF] = -19;
+  action[61][TOKEN_EOF] = -19;
   action[62][TOKEN_LEFT_BRACES] = -22;
   action[62][TOKEN_RIGHT_BRACES] = -22;
   action[62][TOKEN_IF] = -22;
@@ -463,7 +462,7 @@ void create_action_table() {
   action[72][TOKEN_BREAK] = -18;
   action[72][TOKEN_CONTINUE] = -18;
   action[72][TOKEN_ID] = -18;
-  action[72][EOF] = -18;
+  action[72][TOKEN_EOF] = -18;
   action[73][TOKEN_LEFT_BRACES] = -21;
   action[73][TOKEN_RIGHT_BRACES] = -21;
   action[73][TOKEN_IF] = -21;
@@ -1364,7 +1363,7 @@ void create_action_table() {
   action[136][TOKEN_BREAK] = -23;
   action[136][TOKEN_CONTINUE] = -23;
   action[136][TOKEN_ID] = -23;
-  action[136][EOF] = -23;
+  action[136][TOKEN_EOF] = -23;
   action[137][TOKEN_LEFT_BRACES] = -69;
   action[137][TOKEN_IF] = 63;
   action[137][TOKEN_WHILE] = 64;
