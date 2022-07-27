@@ -1,4 +1,4 @@
-# Simple Script Language by naumazeredo - SSna
+# Simple Script Language
 
 Scripting language created as a project for IME (Instituto Militar de
 Engenharia) Compiler course.
